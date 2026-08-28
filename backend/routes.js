@@ -1,5 +1,9 @@
+import express from 'express';
 import mongoose from 'mongoose';
 import SiteData from './models/SiteData.js';
+
+const app = express();
+app.use(express.json());
 
 // Connect to MongoDB using your environment variable
 mongoose.connect(process.env.MONGODB_URI)
