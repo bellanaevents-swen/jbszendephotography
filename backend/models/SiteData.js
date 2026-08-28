@@ -1,13 +1,13 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const siteDataSchema = new mongoose.Schema({
-  albums: Array,
-  photos: Array,
-  tags: Array,
-  descriptions: Object,
-  sectionBackgrounds: Object,
-  testimonials: Array,
-  settings: Object
+  albums: { type: Array, default: [] },
+  photos: { type: Array, default: [] },
+  tags: { type: Array, default: [] },
+  descriptions: { type: Object, default: {} },
+  sectionBackgrounds: { type: Object, default: {} },
+  testimonials: { type: Array, default: [] },
+  settings: { type: Object, default: {} }
 }, { timestamps: true });
 
-module.exports = mongoose.model('SiteData', siteDataSchema);
+export default mongoose.model('SiteData', siteDataSchema);
