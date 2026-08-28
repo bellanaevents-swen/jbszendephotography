@@ -1,4 +1,4 @@
-import express from 'express';
+
 import mongoose from 'mongoose';
 import SiteData from './models/SiteData.js';
 
@@ -79,8 +79,3 @@ apiRouter.post("/feedback", (req, res) => {
   });
 });
 // Bind to process.env.PORT for Render, defaulting to port 5000 locally
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
-});
