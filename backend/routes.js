@@ -1,3 +1,11 @@
+const mongoose = require('mongoose');
+const SiteData = require('./models/SiteData');
+
+// Connect to MongoDB using your environment variable
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch(err => console.error('MongoDB connection error:', err));
+  
 import { Router } from "express";
 import { INITIAL_SITE_SETTINGS, INITIAL_ALBUMS } from "./data.js";
 export const apiRouter = Router();
