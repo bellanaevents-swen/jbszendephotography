@@ -1,6 +1,7 @@
-
+import express from 'express';
 import mongoose from 'mongoose';
 import SiteData from './models/SiteData.js';
+
 
 const app = express();
 app.use(express.json());
@@ -12,7 +13,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 import { Router } from "express";
 import { INITIAL_SITE_SETTINGS, INITIAL_ALBUMS } from "./data.js";
-export const apiRouter = Router();
+export const apiRouter = express.Router();
 apiRouter.get("/health", (_req, res) => {
   res.json({
     status: "ok",
