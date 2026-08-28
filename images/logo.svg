@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" width="100%" height="100%">
+  <!-- Background -->
+  <rect width="500" height="400" fill="#ffffff"/>
+  
+  <!-- Camera Monogram Icon -->
+  <g transform="translate(150, 40) scale(1.0)">
+    <!-- Top Viewfinder & B Loop (Dark stroke) -->
+    <path
+      d="M 78 58 C 74 46, 88 32, 102 32 C 118 32, 128 42, 126 56 C 124 70, 106 74, 96 76 C 128 78, 142 94, 138 116 C 134 134, 114 142, 92 140"
+      stroke="#18181b"
+      stroke-width="11"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+    />
+
+    <!-- Left Camera Body Corner Bracket (Dark stroke) -->
+    <path
+      d="M 68 84 L 68 132 C 68 142, 76 148, 88 148 L 112 148"
+      stroke="#18181b"
+      stroke-width="11"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+    />
+
+    <!-- Right Camera Body Side Bracket (Grey stroke) -->
+    <path
+      d="M 124 82 L 146 82 C 156 82, 162 88, 162 98 L 162 132 C 162 142, 154 148, 144 148 L 136 148"
+      stroke="#71717a"
+      stroke-width="10"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+    />
+
+    <!-- Center Lens Ring (Grey stroke) -->
+    <path
+      d="M 82 110 A 26 26 0 1 0 118 102"
+      stroke="#71717a"
+      stroke-width="9"
+      stroke-linecap="round"
+      fill="none"
+    />
+
+    <!-- Golden Yellow Accent Arc -->
+    <path
+      d="M 82 110 A 26 26 0 0 1 100 78"
+      stroke="#f59e0b"
+      stroke-width="11"
+      stroke-linecap="round"
+      fill="none"
+    />
+  </g>
+
+  <!-- Typography: JB Szende -->
+  <text
+    x="250"
+    y="280"
+    font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+    font-size="42"
+    font-weight="700"
+    fill="#18181b"
+    text-anchor="middle"
+    letter-spacing="-0.5"
+  >
+    JB Szende
+  </text>
+
+  <!-- Typography: PHOTOGRAPHY -->
+  <text
+    x="250"
+    y="325"
+    font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+    font-size="20"
+    font-weight="700"
+    fill="#d97706"
+    text-anchor="middle"
+    letter-spacing="6"
+  >
+    PHOTOGRAPHY
+  </text>
+</svg>

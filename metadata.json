@@ -1,0 +1,6 @@
+{
+  "name": "JB Szende Photography",
+  "description": "Minimalist, high-contrast multi-lingual photography portfolio and gallery for JB Szende Photography with English, Romanian, and Hungarian translations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
