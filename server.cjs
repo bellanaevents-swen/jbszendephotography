@@ -13,10 +13,6 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
@@ -145,11 +141,13 @@ var __filename = (0, import_url.fileURLToPath)(import_meta.url);
 var __dirname = import_path.default.dirname(__filename);
 async function startServer() {
   const app = (0, import_express2.default)();
-  const PORT = 3e3;
+  const PORT = process.env.PORT || 3000;
+
   app.use(import_express2.default.json());
   app.use(import_express2.default.urlencoded({ extended: true }));
   app.use(import_express2.default.static(import_path.default.join(process.cwd(), "public")));
   app.use("/api", apiRouter);
+
   if (process.env.NODE_ENV !== "production") {
     const vite = await (0, import_vite.createServer)({
       server: { middlewareMode: true },
@@ -158,15 +156,32 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = import_path.default.join(process.cwd(), "dist");
-    app.use(import_express2.default.static(distPath));
+
+    // Serve production dist static assets with strict HTML cache controls
+    app.use(import_express2.default.static(distPath, {
+      maxAge: "1y",
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith(".html")) {
+          res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+          res.setHeader("Pragma", "no-cache");
+          res.setHeader("Expires", "0");
+        }
+      }
+    }));
+
     app.get("*", (_req, res) => {
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
       res.sendFile(import_path.default.join(distPath, "index.html"));
     });
   }
+
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[Server] JB Szende Photography server running on http://0.0.0.0:${PORT}`);
+    console.log(`[Server] JB Szende Photography server running on port ${PORT}`);
   });
 }
+
 startServer().catch((err) => {
   console.error("[Server Error]", err);
   process.exit(1);
