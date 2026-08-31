@@ -184,8 +184,18 @@ async function startServer() {
   });
 }
 
+// Only start listening if NOT running on Vercel
+  if (process.env.VERCEL !== "1") {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`[Server] JB Szende Photography server running on port ${PORT}`);
+    });
+  }
+
+
 startServer().catch((err) => {
   console.error("[Server Error]", err);
   process.exit(1);
 });
-//# sourceMappingURL=server.cjs.map
+
+// Export Express app for Vercel Serverless
+module.exports = app;
