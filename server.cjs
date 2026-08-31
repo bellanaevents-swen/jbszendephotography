@@ -157,14 +157,16 @@ async function startServer() {
   } else {
     const distPath = import_path.default.join(process.cwd(), "dist");
 
-    // Serve production dist static assets with strict HTML cache controls
+    // Serve production static files with explicit no-cache overrides for HTML
     app.use(import_express2.default.static(distPath, {
-      maxAge: "1y",
+      etag: false,
       setHeaders: (res, filePath) => {
         if (filePath.endsWith(".html")) {
           res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
           res.setHeader("Pragma", "no-cache");
           res.setHeader("Expires", "0");
+        } else {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
         }
       }
     }));
