@@ -24,7 +24,9 @@ export const CMSProvider = ({ children }) => {
         try {
           const parsed = JSON.parse(saved);
           let bg = parsed.activeBackground;
-          if (!bg || bg === "/images/fashion_photo_bg.jpg") {
+if (!bg || bg === "/images/fashion_photo_bg.jpg" 
+  || bg === "/images/fashion_photo_bg_1787752513248.jpg" 
+  || bg.includes("photos.fife.usercontent.google.com")) {
             bg = INITIAL_SITE_SETTINGS.activeBackground;
           } else if (bg === "/images/camera_fixed_bg.jpg") {
             bg = "/images/camera_fixed_bg_1786097380616.jpg";

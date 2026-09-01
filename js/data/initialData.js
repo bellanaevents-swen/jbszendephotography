@@ -1,4 +1,4 @@
-export const fashionPhotoBgImage = "/images/fashion_photo_bg_1787752513248.jpg";
+export const fashionPhotoBgImage = "https://lh3.googleusercontent.com/pw/AP1GczNRVENLVInkf_dV0HpG70atDYZ33z85XpdAbtVBGEPK1svkyqAGO_4aaRhd-TKsAuCnNU1CZtUtfwNmQY0agTq3jUxYIm74Tw8cjx2d2dirPhen_w=w1920";
 export const heroBgImage = "/images/camera_hero_bg_1786090450899.jpg";
 export const macroBgImage = "/images/camera_macro_bg_1786090472295.jpg";
 export const fashionBgImage = "/images/fashion_photo_bg_1787752513248.jpg";

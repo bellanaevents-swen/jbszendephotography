@@ -39,7 +39,9 @@ function MainApp() {
     }
   };
   let currentBg = siteSettings.activeBackground || fashionPhotoBgImage;
-  if (!currentBg || currentBg === "/images/fashion_photo_bg.jpg") {
+if (!currentBg || currentBg === "/images/fashion_photo_bg.jpg" || 
+  currentBg === "/images/fashion_photo_bg_1787752513248.jpg" 
+  || currentBg.includes("photos.fife.usercontent.google.com")) {
     currentBg = fashionPhotoBgImage;
   } else if (currentBg === "/images/camera_fixed_bg.jpg") {
     currentBg = "/images/camera_fixed_bg_1786097380616.jpg";
@@ -56,14 +58,11 @@ function MainApp() {
         {
     /* Ultra-clear fixed editorial background image */
   }
-        <img
-    src={currentBg}
+<img 
+    src={currentBg} 
     alt="Editorial Fashion Photography Background"
     className="w-full h-full object-cover object-center transition-all duration-700 filter brightness-110 contrast-105"
     referrerPolicy="no-referrer"
-    onError={(e) => {
-      e.currentTarget.src = "/images/fashion_photo_bg_1787752513248.jpg";
-    }}
   />
 
         {
