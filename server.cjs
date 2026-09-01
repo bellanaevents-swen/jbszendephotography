@@ -22,11 +22,31 @@ var import_express2 = __toESM(require("express"), 1);
 var import_path = __toESM(require("path"), 1);
 var import_url = require("url");
 var import_vite = require("vite");
+var import_mongoose = __toESM(require("mongoose"), 1);
+
+// MongoDB Connection
+if (process.env.MONGODB_URI) {
+  import_mongoose.default
+    .connect(process.env.MONGODB_URI)
+    .then(() => console.log("[MongoDB] Connected successfully!"))
+    .catch((err) => console.error("[MongoDB Connection Error]", err));
+}
+
+// MongoDB Schemas & Models
+const albumSchema = new import_mongoose.default.Schema({
+  id: String,
+  title: String,
+  category: String,
+  coverImage: String,
+  description: String,
+  photoCount: Number
+});
+const AlbumModel = import_mongoose.default.models.Album || import_mongoose.default.model("Album", albumSchema);
 
 // backend/routes.js
 var import_express = require("express");
 
-// backend/data.js
+// backend/data.js (Default Seed Data)
 var INITIAL_SITE_SETTINGS = {
   photographerName: "JB Szende",
   tagline: "Capturing Timeless Moments Through Light and Emotion",
@@ -40,6 +60,7 @@ var INITIAL_SITE_SETTINGS = {
   facebookUrl: "https://facebook.com",
   copyrightText: "\xA9 2026 SwenTech. All rights reserved."
 };
+
 var INITIAL_ALBUMS = [
   {
     id: "album-portraits-2026",
@@ -67,30 +88,82 @@ var INITIAL_ALBUMS = [
   }
 ];
 
-// backend/routes.js
+// API Router Configuration
 var apiRouter = (0, import_express.Router)();
+
 apiRouter.get("/health", (_req, res) => {
   res.json({
     status: "ok",
     app: "JB Szende Photography API",
     location: "Odorheiu Secuiesc, Harghita, Romania",
     version: "1.0.0",
-    timestamp: (/* @__PURE__ */ new Date()).toISOString()
+    timestamp: new Date().toISOString()
   });
 });
+
 apiRouter.get("/settings", (_req, res) => {
   res.json({
     success: true,
     data: INITIAL_SITE_SETTINGS
   });
 });
-apiRouter.get("/albums", (_req, res) => {
-  res.json({
-    success: true,
-    count: INITIAL_ALBUMS.length,
-    data: INITIAL_ALBUMS
-  });
+
+// GET /api/albums - Fetches albums dynamically from MongoDB
+apiRouter.get("/albums", async (_req, res) => {
+  try {
+    let albums = await AlbumModel.find({});
+    
+    // Seed initial data if database collection is empty
+    if (!albums || albums.length === 0) {
+      albums = await AlbumModel.insertMany(INITIAL_ALBUMS);
+    }
+
+    res.json({
+      success: true,
+      count: albums.length,
+      data: albums
+    });
+  } catch (err) {
+    console.error("[API Albums Error]", err);
+    res.status(500).json({ success: false, error: "Database query failed." });
+  }
 });
+
+// POST /api/albums/update - Updates album cover image URL in MongoDB
+apiRouter.post("/albums/update", async (req, res) => {
+  const { albumId, newCoverImage } = req.body || {};
+
+  if (!albumId || !newCoverImage) {
+    res.status(400).json({
+      success: false,
+      error: "Both albumId and newCoverImage fields are required."
+    });
+    return;
+  }
+
+  try {
+    const updatedAlbum = await AlbumModel.findOneAndUpdate(
+      { id: albumId },
+      { coverImage: newCoverImage },
+      { new: true }
+    );
+
+    if (!updatedAlbum) {
+      res.status(404).json({ success: false, error: "Album not found." });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: "Image successfully updated in MongoDB!",
+      data: updatedAlbum
+    });
+  } catch (err) {
+    console.error("[API Update Album Error]", err);
+    res.status(500).json({ success: false, error: "Server error while saving image." });
+  }
+});
+
 apiRouter.post("/contact", (req, res) => {
   const { name, email, phone, sessionType, preferredDate, message } = req.body || {};
   if (!name || !email) {
@@ -107,10 +180,11 @@ apiRouter.post("/contact", (req, res) => {
     details: {
       name,
       sessionType: sessionType || "General Inquiry",
-      receivedAt: (/* @__PURE__ */ new Date()).toISOString()
+      receivedAt: new Date().toISOString()
     }
   });
 });
+
 apiRouter.post("/feedback", (req, res) => {
   const { clientName, comment, rating, sessionType } = req.body || {};
   if (!clientName || !comment) {
@@ -129,73 +203,64 @@ apiRouter.post("/feedback", (req, res) => {
       comment,
       rating: rating || 5,
       sessionType: sessionType || "Portrait Session",
-      date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+      date: new Date().toISOString().split("T")[0],
       approved: true
     }
   });
 });
 
-// backend/server.js
+// Express Server and Middleware Configuration
 var import_meta = {};
 var __filename = (0, import_url.fileURLToPath)(import_meta.url);
 var __dirname = import_path.default.dirname(__filename);
-async function startServer() {
-  const app = (0, import_express2.default)();
-  const PORT = process.env.PORT || 3000;
 
-  app.use(import_express2.default.json());
-  app.use(import_express2.default.urlencoded({ extended: true }));
-  app.use(import_express2.default.static(import_path.default.join(process.cwd(), "public")));
-  app.use("/api", apiRouter);
+const app = (0, import_express2.default)();
+const PORT = process.env.PORT || 3000;
 
-  if (process.env.NODE_ENV !== "production") {
+app.use(import_express2.default.json());
+app.use(import_express2.default.urlencoded({ extended: true }));
+app.use(import_express2.default.static(import_path.default.join(process.cwd(), "public")));
+app.use("/api", apiRouter);
+
+if (process.env.NODE_ENV !== "production") {
+  (async () => {
     const vite = await (0, import_vite.createServer)({
       server: { middlewareMode: true },
       appType: "spa"
     });
     app.use(vite.middlewares);
-  } else {
-    const distPath = import_path.default.join(process.cwd(), "dist");
+  })();
+} else {
+  const distPath = import_path.default.join(process.cwd(), "dist");
 
-    // Serve production static files with explicit no-cache overrides for HTML
-    app.use(import_express2.default.static(distPath, {
-      etag: false,
-      setHeaders: (res, filePath) => {
-        if (filePath.endsWith(".html")) {
-          res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-          res.setHeader("Pragma", "no-cache");
-          res.setHeader("Expires", "0");
-        } else {
-          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-        }
+  app.use(import_express2.default.static(distPath, {
+    etag: false,
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Expires", "0");
+      } else {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
       }
-    }));
+    }
+  }));
 
-    app.get("*", (_req, res) => {
-      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      res.setHeader("Pragma", "no-cache");
-      res.setHeader("Expires", "0");
-      res.sendFile(import_path.default.join(distPath, "index.html"));
-    });
-  }
+  app.get("*", (_req, res) => {
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.sendFile(import_path.default.join(distPath, "index.html"));
+  });
+}
 
+// Only start Express listener if NOT running inside Vercel serverless environment
+if (process.env.VERCEL !== "1") {
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`[Server] JB Szende Photography server running on port ${PORT}`);
   });
 }
 
-// Only start listening if NOT running on Vercel
-  if (process.env.VERCEL !== "1") {
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`[Server] JB Szende Photography server running on port ${PORT}`);
-    });
-  }
-
-
-startServer().catch((err) => {
-  console.error("[Server Error]", err);
-  process.exit(1);
-});
-
-// Export Express app for Vercel Serverless
+// Export Express app for Vercel Serverless Function
 module.exports = app;
+//# sourceMappingURL=server.cjs.map
